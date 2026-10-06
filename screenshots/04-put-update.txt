@@ -1,0 +1,28 @@
+LAB 5 - LIVE API REQUEST AND RESPONSE
+04 - Update user
+
+REQUEST (executed with curl)
+$ curl --silent --show-error --include --max-time 10 --request PUT http://localhost:5000/api/users/update --header 'Accept: application/json' --header 'Content-Type: application/json' --data '{"name":"Jane Doe","email":"john@example.com","phone":"067765434567","address":"John Doe Street, Innsbruck","country":"Lebanon","user_id":1}'
+
+
+RESPONSE (received from the running Flask server)
+HTTP/1.1 200 OK
+Server: Werkzeug/3.1.9 Python/3.9.6
+Date: Tue, 06 Oct 2026 13:43:36 GMT
+Content-Type: application/json
+Content-Length: 141
+Access-Control-Allow-Origin: *
+Connection: close
+
+{
+  "address": "John Doe Street, Innsbruck",
+  "country": "Lebanon",
+  "email": "john@example.com",
+  "name": "Jane Doe",
+  "phone": "067765434567",
+  "user_id": 1
+}
+
+CHECK: HTTP 200 matches the expected status.
+[Request completed]
+(base) ghanux@Josephs-MacBook-Pro 5 %

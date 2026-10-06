@@ -67,6 +67,27 @@ class UserAPITests(unittest.TestCase):
         self.assertIn("error", response.json)
         self.assertEqual(self.client.get("/api/users/not-an-id").status_code, 404)
 
+    def test_patch_preserves_omitted_fields(self):
+        user = self.client.post("/api/users/add", json=self.user).json
+        url = f'/api/users/{user["user_id"]}'
+        response = self.client.patch(url, json={"country": "Lebanon"})
+        self.assertEqual(response.status_code, 200)
+        expected = {**user, "country": "Lebanon"}
+        self.assertEqual(response.json, expected)
+        self.assertEqual(create_app(self.path).test_client().get(url).json, expected)
+
+    def test_patch_rejects_invalid_fields_without_changing_user(self):
+        user = self.client.post("/api/users/add", json=self.user).json
+        url = f'/api/users/{user["user_id"]}'
+        for body in ({}, [], {"country": " "}, {"phone": 123}, {"user_id": 9},
+                     {"unknown": "value"}, {"name": "Changed", "country": None}):
+            with self.subTest(body=body):
+                self.assertEqual(self.client.patch(url, json=body).status_code, 400)
+                self.assertEqual(self.client.get(url).json, user)
+
+    def test_patch_missing_user(self):
+        self.assertEqual(self.client.patch("/api/users/999", json={"name": "Jane"}).status_code, 404)
+
     def test_cors(self):
         response = self.client.options("/api/users/add", headers={
             "Origin": "http://localhost:3000", "Access-Control-Request-Method": "POST"})

@@ -60,6 +60,22 @@ def update_user(user, database=None):
         return dict(conn.execute("SELECT * FROM users WHERE user_id = ?", (user["user_id"],)).fetchone())
 
 
+def patch_user(user_id, changes, database=None):
+    """Update only supplied fields; column names come from a fixed allowlist."""
+    fields = [field for field in FIELDS if field in changes]
+    if not fields:
+        raise ValueError("At least one user field is required.")
+    assignments = ", ".join(f"{field} = ?" for field in fields)
+    with closing(connect_to_db(database)) as conn, conn:
+        cur = conn.execute(
+            f"UPDATE users SET {assignments} WHERE user_id = ?",
+            tuple(changes[field] for field in fields) + (user_id,),
+        )
+        if cur.rowcount == 0:
+            return None
+        return dict(conn.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone())
+
+
 def delete_user(user_id, database=None):
     with closing(connect_to_db(database)) as conn, conn:
         return conn.execute("DELETE FROM users WHERE user_id = ?", (user_id,)).rowcount > 0

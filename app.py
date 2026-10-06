@@ -51,6 +51,19 @@ def create_app(database_path=None):
         updated = db.update_user(user, app.config["DATABASE"])
         return jsonify(updated) if updated else (jsonify(error="User not found."), 404)
 
+    @app.patch("/api/users/<int:user_id>")
+    def api_patch_user(user_id):
+        changes = request.get_json()
+        if not isinstance(changes, dict) or not changes:
+            return jsonify(error="Supply at least one user field in a JSON object."), 400
+        for field, value in changes.items():
+            if field not in db.FIELDS:
+                return jsonify(error=f"Unknown or read-only field: {field}."), 400
+            if not isinstance(value, str) or not value.strip():
+                return jsonify(error=f"{field} must be a nonempty string."), 400
+        updated = db.patch_user(user_id, changes, app.config["DATABASE"])
+        return jsonify(updated) if updated else (jsonify(error="User not found."), 404)
+
     @app.delete("/api/users/delete/<int:user_id>")
     def api_delete_user(user_id):
         if not db.delete_user(user_id, app.config["DATABASE"]):
@@ -70,4 +83,30 @@ def create_app(database_path=None):
 
 
 if __name__ == "__main__":
-    create_app().run(host="127.0.0.1", port=int(os.environ.get("PORT", "5000")))
+    # Serve both localhost address families. Some API clients prefer ::1,
+    # while others prefer 127.0.0.1 (notably when AirPlay also uses port 5000).
+    import socket
+    import threading
+    from werkzeug.serving import make_server
+
+    app = create_app()
+    port = int(os.environ.get("PORT", "5000"))
+    ipv4 = make_server("127.0.0.1", port, app, threaded=True)
+    ipv6 = None
+    if socket.has_ipv6:
+        try:
+            ipv6 = make_server("::1", ipv4.server_port, app, threaded=True)
+        except (OSError, SystemExit):
+            app.logger.warning("IPv6 localhost unavailable; use http://127.0.0.1:%s", ipv4.server_port)
+    if ipv6:
+        threading.Thread(target=ipv6.serve_forever, daemon=True).start()
+    print(f"Lab development API: http://localhost:{ipv4.server_port} (Ctrl+C to stop)", flush=True)
+    try:
+        ipv4.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if ipv6:
+            ipv6.shutdown()
+            ipv6.server_close()
+        ipv4.server_close()

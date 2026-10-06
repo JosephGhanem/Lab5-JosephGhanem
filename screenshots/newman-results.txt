@@ -1,0 +1,101 @@
+newman
+
+Flask user app
+
+→ 01 - Add user
+  POST http://localhost:5000/api/users/add [201 CREATED, 343B, 28ms]
+  ✓  Status is 201
+  ✓  Response is JSON
+  ✓  Created user has an ID
+  ✓  Name is saved
+
+→ 02 - Get all users
+  GET http://localhost:5000/api/users [200 OK, 340B, 3ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Returns a list
+  ✓  List includes created user
+
+→ 03 - Get user by ID
+  GET http://localhost:5000/api/users/1 [200 OK, 338B, 3ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Correct user ID
+  ✓  Correct name
+  ✓  Correct country
+  ✓  Correct address
+
+→ 04 - Update user
+  PUT http://localhost:5000/api/users/update [200 OK, 338B, 5ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Correct user ID
+  ✓  Correct name
+  ✓  Correct country
+  ✓  Correct address
+
+→ 05 - Verify updated user
+  GET http://localhost:5000/api/users/1 [200 OK, 338B, 3ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Correct user ID
+  ✓  Correct name
+  ✓  Correct country
+  ✓  Correct address
+
+→ 06 - Partially update user
+  PATCH http://localhost:5000/api/users/1 [200 OK, 332B, 3ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Correct user ID
+  ✓  Correct name
+  ✓  Correct country
+  ✓  Correct address
+
+→ 07 - Verify partial update
+  GET http://localhost:5000/api/users/1 [200 OK, 332B, 3ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Correct user ID
+  ✓  Correct name
+  ✓  Correct country
+  ✓  Correct address
+
+→ 08 - Delete user
+  DELETE http://localhost:5000/api/users/delete/1 [200 OK, 235B, 3ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Deletion succeeded
+
+→ 09 - Verify user was deleted
+  GET http://localhost:5000/api/users/1 [404 NOT FOUND, 231B, 4ms]
+  ✓  Status is 404
+  ✓  Response is JSON
+  ✓  User is missing
+
+→ 10 - Get all users after deletion
+  GET http://localhost:5000/api/users [200 OK, 198B, 2ms]
+  ✓  Status is 200
+  ✓  Response is JSON
+  ✓  Returns a list
+  ✓  List excludes deleted user
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              48 │               0 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 199ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 1.05kB (approx)                        │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 5ms [min: 2ms, max: 28ms, s.d.: 7ms] │
+└─────────────────────────────────────────────────────────────┘

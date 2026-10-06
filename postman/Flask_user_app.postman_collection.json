@@ -163,7 +163,8 @@
               "const body = pm.response.json();",
               "pm.test(\"Correct user ID\", function () { pm.expect(body.user_id).to.eql(Number(pm.environment.get(\"user_id\"))); });",
               "pm.test(\"Correct name\", function () { pm.expect(body.name).to.eql(\"John Doe\"); });",
-              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Austria\"); });"
+              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Austria\"); });",
+              "pm.test(\"Correct address\", function () { pm.expect(body.address).to.eql(\"John Doe Street, Innsbruck\"); });"
             ]
           }
         }
@@ -231,7 +232,8 @@
               "const body = pm.response.json();",
               "pm.test(\"Correct user ID\", function () { pm.expect(body.user_id).to.eql(Number(pm.environment.get(\"user_id\"))); });",
               "pm.test(\"Correct name\", function () { pm.expect(body.name).to.eql(\"Jane Doe\"); });",
-              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Lebanon\"); });"
+              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Lebanon\"); });",
+              "pm.test(\"Correct address\", function () { pm.expect(body.address).to.eql(\"John Doe Street, Innsbruck\"); });"
             ]
           }
         }
@@ -299,7 +301,8 @@
               "const body = pm.response.json();",
               "pm.test(\"Correct user ID\", function () { pm.expect(body.user_id).to.eql(Number(pm.environment.get(\"user_id\"))); });",
               "pm.test(\"Correct name\", function () { pm.expect(body.name).to.eql(\"Jane Doe\"); });",
-              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Lebanon\"); });"
+              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Lebanon\"); });",
+              "pm.test(\"Correct address\", function () { pm.expect(body.address).to.eql(\"John Doe Street, Innsbruck\"); });"
             ]
           }
         }
@@ -332,7 +335,145 @@
       ]
     },
     {
-      "name": "06 - Delete user",
+      "name": "06 - Partially update user",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/users/{{user_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"address\": \"Hamra Street, Beirut\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+              "const body = pm.response.json();",
+              "pm.test(\"Correct user ID\", function () { pm.expect(body.user_id).to.eql(Number(pm.environment.get(\"user_id\"))); });",
+              "pm.test(\"Correct name\", function () { pm.expect(body.name).to.eql(\"Jane Doe\"); });",
+              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Lebanon\"); });",
+              "pm.test(\"Correct address\", function () { pm.expect(body.address).to.eql(\"Hamra Street, Beirut\"); });"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 - OK",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/{{user_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"Hamra Street, Beirut\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"address\": \"Hamra Street, Beirut\",\n  \"country\": \"Lebanon\",\n  \"email\": \"john@example.com\",\n  \"name\": \"Jane Doe\",\n  \"phone\": \"067765434567\",\n  \"user_id\": 1\n}"
+        }
+      ]
+    },
+    {
+      "name": "07 - Verify partial update",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/users/{{user_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });",
+              "const body = pm.response.json();",
+              "pm.test(\"Correct user ID\", function () { pm.expect(body.user_id).to.eql(Number(pm.environment.get(\"user_id\"))); });",
+              "pm.test(\"Correct name\", function () { pm.expect(body.name).to.eql(\"Jane Doe\"); });",
+              "pm.test(\"Correct country\", function () { pm.expect(body.country).to.eql(\"Lebanon\"); });",
+              "pm.test(\"Correct address\", function () { pm.expect(body.address).to.eql(\"Hamra Street, Beirut\"); });"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 - OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/{{user_id}}"
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"address\": \"Hamra Street, Beirut\",\n  \"country\": \"Lebanon\",\n  \"email\": \"john@example.com\",\n  \"name\": \"Jane Doe\",\n  \"phone\": \"067765434567\",\n  \"user_id\": 1\n}"
+        }
+      ]
+    },
+    {
+      "name": "08 - Delete user",
       "request": {
         "method": "DELETE",
         "header": [
@@ -385,7 +526,7 @@
       ]
     },
     {
-      "name": "07 - Verify user was deleted",
+      "name": "09 - Verify user was deleted",
       "request": {
         "method": "GET",
         "header": [
@@ -438,7 +579,7 @@
       ]
     },
     {
-      "name": "08 - Get all users after deletion",
+      "name": "10 - Get all users after deletion",
       "request": {
         "method": "GET",
         "header": [

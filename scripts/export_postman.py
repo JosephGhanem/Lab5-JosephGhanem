@@ -18,6 +18,7 @@ from app import create_app
 USER = dict(name="John Doe", email="john@example.com", phone="067765434567",
             address="John Doe Street, Innsbruck", country="Austria")
 UPDATED = {**USER, "name": "Jane Doe", "country": "Lebanon"}
+PATCHED = {**UPDATED, "address": "Hamra Street, Beirut"}
 
 
 def main():
@@ -33,9 +34,11 @@ def main():
             ("03 - Get user by ID", "GET", "/api/users/{{user_id}}", None, 200),
             ("04 - Update user", "PUT", "/api/users/update", {**UPDATED, "user_id": "{{user_id}}"}, 200),
             ("05 - Verify updated user", "GET", "/api/users/{{user_id}}", None, 200),
-            ("06 - Delete user", "DELETE", "/api/users/delete/{{user_id}}", None, 200),
-            ("07 - Verify user was deleted", "GET", "/api/users/{{user_id}}", None, 404),
-            ("08 - Get all users after deletion", "GET", "/api/users", None, 200),
+            ("06 - Partially update user", "PATCH", "/api/users/{{user_id}}", {"address": PATCHED["address"]}, 200),
+            ("07 - Verify partial update", "GET", "/api/users/{{user_id}}", None, 200),
+            ("08 - Delete user", "DELETE", "/api/users/delete/{{user_id}}", None, 200),
+            ("09 - Verify user was deleted", "GET", "/api/users/{{user_id}}", None, 404),
+            ("10 - Get all users after deletion", "GET", "/api/users", None, 200),
         ]
         user_id = None
         try:
@@ -72,22 +75,23 @@ def main():
                         'pm.environment.set("user_id", body.user_id);',
                         'pm.test("Name is saved", function () { pm.expect(body.name).to.eql("John Doe"); });',
                     ]
-                elif index in (1, 7):
+                elif index in (1, 9):
                     assert response_body == ([{**USER, "user_id": user_id}] if index == 1 else [])
                     tests += ['pm.test("Returns a list", function () { pm.expect(body).to.be.an("array"); });']
                     if index == 1:
                         tests += ['pm.test("List includes created user", function () { pm.expect(body.some(u => u.user_id === Number(pm.environment.get("user_id")))).to.eql(true); });']
                     else:
                         tests += ['pm.test("List excludes deleted user", function () { pm.expect(body.some(u => u.user_id === Number(pm.environment.get("user_id")))).to.eql(false); });']
-                elif index in (2, 3, 4):
-                    expected = USER if index == 2 else UPDATED
+                elif index in (2, 3, 4, 5, 6):
+                    expected = USER if index == 2 else (PATCHED if index in (5, 6) else UPDATED)
                     assert response_body == {**expected, "user_id": user_id}
                     tests += [
                         'pm.test("Correct user ID", function () { pm.expect(body.user_id).to.eql(Number(pm.environment.get("user_id"))); });',
                         f'pm.test("Correct name", function () {{ pm.expect(body.name).to.eql({json.dumps(expected["name"])}); }});',
                         f'pm.test("Correct country", function () {{ pm.expect(body.country).to.eql({json.dumps(expected["country"])}); }});',
+                        f'pm.test("Correct address", function () {{ pm.expect(body.address).to.eql({json.dumps(expected["address"])}); }});',
                     ]
-                elif index == 5:
+                elif index == 7:
                     assert response_body == {"status": "User deleted successfully"}
                     tests += ['pm.test("Deletion succeeded", function () { pm.expect(body.status).to.eql("User deleted successfully"); });']
                 else:
@@ -114,7 +118,7 @@ def main():
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     }, "item": items}
     environment = {"name": "Lab 5 Local", "values": [
-        {"key": "base_url", "value": "http://127.0.0.1:5000", "type": "default", "enabled": True},
+        {"key": "base_url", "value": "http://localhost:5000", "type": "default", "enabled": True},
         {"key": "user_id", "value": "", "type": "default", "enabled": True},
     ], "_postman_variable_scope": "environment"}
     out = ROOT / "postman"

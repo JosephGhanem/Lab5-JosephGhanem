@@ -1,0 +1,23 @@
+LAB 5 - LIVE API REQUEST AND RESPONSE
+09 - Verify user was deleted
+
+REQUEST (executed with curl)
+$ curl --silent --show-error --include --max-time 10 --request GET http://localhost:5000/api/users/1 --header 'Accept: application/json'
+
+
+RESPONSE (received from the running Flask server)
+HTTP/1.1 404 NOT FOUND
+Server: Werkzeug/3.1.9 Python/3.9.6
+Date: Tue, 06 Oct 2026 13:43:40 GMT
+Content-Type: application/json
+Content-Length: 28
+Access-Control-Allow-Origin: *
+Connection: close
+
+{
+  "error": "User not found."
+}
+
+CHECK: HTTP 404 matches the expected status.
+[Request completed]
+(base) ghanux@Josephs-MacBook-Pro 5 %

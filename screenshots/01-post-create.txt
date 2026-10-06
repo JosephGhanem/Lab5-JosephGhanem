@@ -1,0 +1,28 @@
+LAB 5 - LIVE API REQUEST AND RESPONSE
+01 - Add user
+
+REQUEST (executed with curl)
+$ curl --silent --show-error --include --max-time 10 --request POST http://localhost:5000/api/users/add --header 'Accept: application/json' --header 'Content-Type: application/json' --data '{"name":"John Doe","email":"john@example.com","phone":"067765434567","address":"John Doe Street, Innsbruck","country":"Austria"}'
+
+
+RESPONSE (received from the running Flask server)
+HTTP/1.1 201 CREATED
+Server: Werkzeug/3.1.9 Python/3.9.6
+Date: Tue, 06 Oct 2026 13:42:44 GMT
+Content-Type: application/json
+Content-Length: 141
+Access-Control-Allow-Origin: *
+Connection: close
+
+{
+  "address": "John Doe Street, Innsbruck",
+  "country": "Austria",
+  "email": "john@example.com",
+  "name": "John Doe",
+  "phone": "067765434567",
+  "user_id": 1
+}
+
+CHECK: HTTP 201 matches the expected status.
+[Request completed]
+(base) ghanux@Josephs-MacBook-Pro 5 %
