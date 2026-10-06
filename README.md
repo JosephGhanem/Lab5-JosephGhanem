@@ -94,7 +94,8 @@ is merged into `main` with a merge commit, preserving the lab's branch history.
 
 ## Submission
 
-After publication, upload `github_repo_link.txt` to the course submission page.
-It will contain the verified GitHub repository URL. The repository includes the source code, requirements,
+Upload `github_repo_link.txt` to the course submission page.
+It contains the GitHub repository URL: https://github.com/JosephGhanem/Lab5-JosephGhanem.
+The repository includes the source code, requirements,
 tests, and Postman collection/environment. The virtual environment and local
 database are excluded from Git.
